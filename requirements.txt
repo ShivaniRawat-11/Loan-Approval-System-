@@ -1,0 +1,15 @@
+streamlit
+langchain
+langchain-google-genai
+langchain-community
+langchain-huggingface
+langchain-text-splitters
+faiss-cpu
+sentence-transformers
+pypdf
+python-dotenv
+joblib
+pandas
+numpy
+scikit-learn
+pydantic

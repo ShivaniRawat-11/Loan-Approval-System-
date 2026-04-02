@@ -1,0 +1,84 @@
+# Loan Approval Agent - Bank Policy Document
+
+## Credit Score Requirements
+- Minimum credit score required for loan approval: 650
+- Credit scores between 650-700: May be approved with higher interest rates
+- Credit scores above 750: Eligible for premium loan rates and higher loan amounts
+- Credit scores below 600: Generally not eligible for unsecured loans
+
+## Income Requirements
+- Minimum monthly income required: $2,500
+- Debt-to-income ratio should not exceed 43%
+- Co-applicant income is considered for joint applications
+- Self-employed applicants must provide 2 years of income documentation
+- Salaried employees from government or reputed companies are preferred
+
+## Employment Status
+- Minimum employment tenure: 6 months at current employer
+- Self-employed must have business running for at least 2 years
+- Unemployed applicants are not eligible for personal loans
+- Part-time workers must show consistent income for 12 months
+
+## Loan Amount Limits
+- Minimum loan amount: $1,000
+- Maximum loan amount: 10 times the monthly income
+- First-time borrowers limited to $50,000 maximum
+- Loan term options: 12, 24, 36, 48, or 60 months
+
+## Property Area Considerations
+- Urban properties: Standard evaluation
+- Semi-urban properties: May require additional documentation
+- Rural properties: Subject to additional verification and may have lower approval rates
+
+## Marital Status and Dependents
+- Joint applications with spouse may increase loan eligibility
+- Number of dependents affects disposable income calculation
+
+## Loan Purpose Categories
+- Home loans: Lowest interest rates, highest loan amounts
+- Education loans: Special schemes available with grace period
+- Personal loans: Standard interest rates apply
+- Business loans: Require business plan and collateral for amounts above $25,000
+
+## Documentation Requirements
+- Valid government-issued ID
+- Proof of income (salary slips or tax returns)
+- Bank statements for the last 6 months
+- Address proof
+- Employment verification letter
+- Credit report authorization
+
+## Common Reasons for Loan Rejection
+1. Credit score below minimum threshold
+2. Insufficient income to support loan EMI
+3. High existing debt obligations
+4. Unstable employment history
+5. Incomplete or fraudulent documentation
+6. Previous loan defaults or delinquencies
+7. Too many recent credit inquiries
+
+## Tips to Improve Loan Approval Chances
+1. Maintain a credit score above 700
+2. Pay off existing debts before applying
+3. Ensure stable employment for at least 1 year
+4. Keep bank balance healthy
+5. Apply for loan amount within your eligibility
+6. Provide accurate and complete documentation
+7. Consider adding a co-applicant with good credit
+
+## Interest Rate Structure
+- Base rate: 8.5% per annum
+- Credit score above 750: Base rate + 0%
+- Credit score 700-750: Base rate + 1%
+- Credit score 650-700: Base rate + 2.5%
+- Processing fee: 1-2% of loan amount
+- Prepayment penalty: None for floating rate loans
+
+## Eligibility Criteria Summary
+To be eligible for a loan, applicants must:
+- Be between 21 and 65 years of age
+- Have a minimum credit score of 650
+- Have a stable source of income
+- Meet the minimum income requirements
+- Have a debt-to-income ratio below 43%
+- Provide all required documentation
