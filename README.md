@@ -81,6 +81,51 @@ graph TD
 
 ---
 
+## 🧠 How the Machine Learning (ML) Part Works
+
+The Machine Learning aspect of this project is decoupled as a LangChain **Tool** (`backend/tools/loan_tool.py`). This allows the AI Agent (Gemini) to dynamically call the ML model whenever a user asks for a loan prediction.
+
+### The ML Workflow Diagram
+
+```mermaid
+graph TD
+    %% Define Styles
+    classDef llm fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff;
+    classDef process fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
+    classDef ml fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
+    classDef db fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff;
+
+    User["LangChain Agent<br/>(Passes JSON Inputs)"]:::llm --> Validation
+    
+    subgraph ML_Pipeline ["ML Tool Pipeline (loan_tool.py)"]
+        direction TB
+        Validation["1. Input Validation<br/>(Policy Checks: Age, Score)"]:::process
+        Norm["2. Derived Features<br/>(DTI Ratio, EMI Calculation)"]:::process
+        Encode["3. Encode & Scale<br/>(Label/OHE, StandardScaler)"]:::process
+        Predict["4. Sklearn Prediction<br/>(Predict & Predict_Proba)"]:::ml
+        Feedback["5. Generate Feedback<br/>(Rejection reasons)"]:::process
+        
+        Validation --> Norm
+        Norm --> Encode
+        Encode --> Predict
+        Predict --> Feedback
+    end
+    
+    Artifacts[("Pre-trained Artifacts<br/>(model, scaler, ohe .pkl)")]:::db -.-> Encode
+    Artifacts -.-> Predict
+    
+    Feedback --> Output["Final Result to User"]:::llm
+```
+
+### Step-by-Step ML Process
+1. **Thread-Safe Loading:** Pre-trained `sklearn` artifacts (the model, scaler, and encoders) are loaded into memory once using a thread-lock to ensure performance and prevent memory leaks.
+2. **Validation:** The incoming data is validated against basic banking policies (e.g., Age must be 21-65, income cannot be negative).
+3. **Feature Engineering:** Derived financial metrics are calculated, such as the estimated Monthly EMI and the Debt-to-Income (DTI) ratio.
+4. **Encoding & Scaling:** Categorical variables (Gender, Education, Property Area) are converted to numbers using Label Encoding and One-Hot Encoding. The final feature set is scaled using `StandardScaler`.
+5. **Prediction & Feedback:** The `sklearn` model predicts Approval (1) or Rejection (0) and calculates a confidence score. Based on the data, actionable feedback is generated (e.g., "Your Debt-to-Income ratio of 45% exceeds the 43% policy limit").
+
+---
+
 ## 📂 Project Structure
 
 ```text
