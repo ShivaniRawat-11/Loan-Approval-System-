@@ -407,29 +407,36 @@ export default function DashboardPage() {
         {/* Chat Area */}
         <div className="chat-area">
           <div className="chat-messages">
-            {messages.map((msg, i) => (
-              <div key={i} className="chat-message">
-                <div className={`chat-avatar ${msg.role}`}>
-                  {msg.role === 'user' ? '👦' : '🤖'}
-                </div>
-                <div className={`chat-bubble ${msg.role}`}>
-                  <div dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }} />
-                  {msg.role === 'assistant' && msg.content && (
-                    <div className="chat-disclaimer">
-                      ⚠️ Disclaimer: This is an AI-generated assessment based on standard banking guidelines. Final loan approval is subject to physical document verification and official bank policies.
+            {messages.map((msg, i) => {
+              const isThinking = isStreaming && i === messages.length - 1 && msg.role === 'assistant' && msg.content === '';
+              
+              if (isThinking) {
+                return (
+                  <div key={i} className="chat-message">
+                    <div className="chat-avatar assistant">🤖</div>
+                    <div className="chat-bubble assistant">
+                      <span className="spinner" style={{ borderTopColor: '#2563eb', width: 16, height: 16 }} /> Thinking...
                     </div>
-                  )}
+                  </div>
+                );
+              }
+
+              return (
+                <div key={i} className="chat-message">
+                  <div className={`chat-avatar ${msg.role}`}>
+                    {msg.role === 'user' ? '👦' : '🤖'}
+                  </div>
+                  <div className={`chat-bubble ${msg.role}`}>
+                    <div dangerouslySetInnerHTML={{ __html: formatMarkdown(msg.content) }} />
+                    {msg.role === 'assistant' && msg.content && (
+                      <div className="chat-disclaimer">
+                        ⚠️ Disclaimer: This is an AI-generated assessment based on standard banking guidelines. Final loan approval is subject to physical document verification and official bank policies.
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-            {isStreaming && messages[messages.length - 1]?.content === '' && (
-              <div className="chat-message">
-                <div className="chat-avatar assistant">🤖</div>
-                <div className="chat-bubble assistant">
-                  <span className="spinner" style={{ borderTopColor: '#2563eb', width: 16, height: 16 }} /> Thinking...
-                </div>
-              </div>
-            )}
+              );
+            })}
             <div ref={chatEndRef} />
           </div>
 
