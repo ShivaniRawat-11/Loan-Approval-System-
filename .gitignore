@@ -1,20 +1,46 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 
-# Environment
-.env
-.venv/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Caching and testing
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
 
-# Streamlit
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+venv.bak/
+env.bak/
+
+# Environment Variables & Secrets
+.env
+.streamlit/secrets.toml
 .streamlit/credentials.toml
 
-# OS
+# OS Files
 .DS_Store
+.DS_Store?
+._*
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Node.js & Frontend
+node_modules/
+.next/
+out/
+build/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

@@ -1,81 +1,71 @@
-# 🏦 AI Loan Approval System
+# 🏦 AI Loan Approval System (Decoupled Architecture)
 
-A production-ready RAG-based Loan Approval System built with LangChain, Streamlit, and Google Gemini.
+A production-ready RAG-based Loan Approval System. The project has recently been refactored from a monolithic Streamlit app into a modern, decoupled 3-tier architecture using **Next.js** (Frontend), **FastAPI** (Backend), and **SQLite** (Database), all containerized with **Docker**.
 
 ## Features
 
-- **Document Upload** — Upload PDF and TXT loan documents (policies, applications, credit reports, income proofs)
-- **RAG Pipeline** — Documents are chunked, embedded, and indexed in FAISS for retrieval
-- **ML Prediction** — Trained sklearn model predicts loan approval with confidence scores
-- **Policy Enforcement** — Decisions are strictly based on retrieved document content
-- **Structured Output** — Professional format: Applicant Summary → Policy Evaluation → Final Decision
+- **JWT Authentication** — Secure login and signup with JSON Web Tokens.
+- **Modern UI** — A premium, responsive user interface built with Next.js and Tailwind-like Vanilla CSS.
+- **Document Upload** — Upload PDF and TXT loan documents (policies, applications, credit reports, income proofs).
+- **RAG Pipeline** — Documents are chunked, embedded, and indexed in FAISS for retrieval.
+- **ML Prediction** — Trained sklearn model predicts loan approval with confidence scores.
+- **Dockerized Setup** — Fully containerized for seamless cross-platform deployment.
 
 ## Project Structure
 
-```
+```text
 loan_approval_agent/
-├── app.py                  # Streamlit UI with document upload
-├── agent.py                # LangChain agent with RAG + tools
-├── vector_store.py         # Dynamic FAISS vector store from uploads
-├── tools/
-│   └── loan_tool.py        # ML prediction tool (sklearn)
-├── ML model/
-│   ├── ML_part.py          # Model training script
-│   ├── loan_model.pkl      # Trained model
-│   ├── scaler.pkl          # Feature scaler
-│   ├── le_education.pkl    # Label encoder
-│   ├── ohe.pkl             # One-hot encoder
-│   └── feature_names.pkl   # Feature names
-├── data/
-│   └── bank_policy.txt     # Sample bank policy document
-├── requirements.txt
-├── .env                    # GOOGLE_API_KEY goes here
+├── backend/                # FastAPI Backend Service
+│   ├── main.py             # Entry point
+│   ├── routes/             # API Endpoints (auth, chat, documents)
+│   ├── services/           # LangChain RAG logic & LLM agents
+│   ├── tools/              # ML model and sklearn tools
+│   ├── utils/              # Security (JWT) and helpers
+│   ├── database/           # SQLite DB connection
+│   └── requirements.txt    # Python dependencies
+├── frontend/               # Next.js Frontend Service
+│   ├── src/app/            # App router pages (Login, Dashboard)
+│   ├── src/lib/api.js      # API fetch client
+│   └── package.json        # Node.js dependencies
+├── .env                    # Environment variables (Backend)
+├── docker-compose.yml      # Docker orchestration
 └── README.md
 ```
 
-## Setup
+## Setup & Running (Using Docker)
 
-### 1. Install Dependencies
+The easiest way to run the application is using Docker Compose. This ensures you don't need to install Python or Node.js directly on your host machine.
 
+### 1. Set API Keys
+Create or update the `.env` file in the project root:
+```env
+NVIDIA_API_KEY=your_nvidia_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+# Note: Provide whichever API keys you configured your LangChain models to use.
+```
+
+### 2. Build and Start Containers
+Make sure Docker Desktop is running, then execute:
 ```bash
-pip install -r requirements.txt
+docker compose up --build -d
 ```
 
-### 2. Set API Key
+### 3. Access the App
+- **Frontend UI:** [http://localhost:3000](http://localhost:3000)
+- **Backend API Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 
-Create a `.env` file in the project root:
+---
 
-```
-GOOGLE_API_KEY=your_google_api_key_here
-```
+## 🛠 Troubleshooting: "Red Lines" in VS Code
 
-### 3. Run the Application
+If you open the project in VS Code and see red squiggly lines (e.g., unresolved imports in `frontend/` or `backend/`), **do not worry! There are no actual syntax errors.**
 
-```bash
-streamlit run app.py
-```
+### Why does this happen?
+Because the project runs entirely inside Docker, the required local dependencies (`node_modules` for Next.js, and the Python virtual environment for FastAPI) are installed *inside the containers*, not on your host machine. VS Code's local linting tools cannot see them.
 
-## Usage
+### How to fix it (Optional):
+If you want IDE autocomplete and linting to work flawlessly on your host machine, you can install the dependencies locally just for the IDE's sake:
+1. **Frontend:** Open terminal, `cd frontend`, and run `npm install`.
+2. **Backend:** Open terminal, `cd backend`, create a venv `python -m venv venv`, activate it, and run `pip install -r requirements.txt`.
 
-1. **Upload Documents** — Use the sidebar to upload loan policy PDFs, application forms, credit reports, etc.
-2. **Process** — Click "Process Documents" to ingest and index them
-3. **Ask Questions** — Use the chat to ask about policies or evaluate loan eligibility
-4. **Get Decisions** — Receive structured, policy-driven loan decisions
-
-## Sample Prompts
-
-- "What is the minimum credit score required?"
-- "Check eligibility: income $5000, loan $20000, credit score 720"
-- "What documents are needed for a home loan?"
-- "Why might a loan be rejected?"
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| UI | Streamlit |
-| LLM | Google Gemini 2.5 Flash |
-| RAG | LangChain + FAISS |
-| Embeddings | HuggingFace `all-MiniLM-L6-v2` |
-| ML Model | scikit-learn |
-| Document Loading | PyPDF, TextLoader |
+Otherwise, you can safely ignore the red lines, as Docker handles everything successfully during runtime.
