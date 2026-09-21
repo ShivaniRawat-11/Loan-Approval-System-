@@ -28,9 +28,9 @@ Recently refactored from a monolithic app into a decoupled, highly scalable arch
 
 ---
 
-## 🏗 System Architecture
+## 🏗 End-to-End Architecture & User Query Flow
 
-The application is broken down into 5 main components: Frontend, API Layer, Agent Core, Data Layer, and External APIs.
+The system features a fully decoupled 3-tier architecture. The diagram below illustrates the complete lifecycle of a User Query—how the Next.js Frontend communicates with the FastAPI Backend, and how the **LangChain Agent** dynamically routes the query to either the **RAG Engine** (for document search) or the **ML Tool** (for loan predictions).
 
 ```mermaid
 graph TD
@@ -38,46 +38,41 @@ graph TD
     classDef frontend fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
     classDef backend fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
     classDef agent fill:#8b5cf6,stroke:#6d28d9,stroke-width:2px,color:#fff;
-    classDef db fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff;
-    classDef ext fill:#ef4444,stroke:#b91c1c,stroke-width:2px,color:#fff;
+    classDef tool fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff;
 
-    subgraph Client ["Client Layer"]
-        UI["Next.js Frontend UI"]:::frontend
-    end
-
-    subgraph APILayer ["API Layer (FastAPI)"]
-        Router["API Routers<br/>(/auth, /chat, /documents)"]:::backend
-        Auth["Auth Service<br/>(JWT)"]:::backend
-    end
-
-    subgraph AgentCore ["Agent & ML Core"]
-        AgentService["Agent Service<br/>(LangChain)"]:::agent
-        Classifier["Document Classifier"]:::agent
-        StructuredExtractor["Structured Extractor"]:::agent
-        RAG["RAG Engine"]:::agent
-    end
-
-    subgraph DataLayer ["Data Layer"]
-        SQLite[("SQLite DB")]:::db
-        FAISS[("FAISS Vector Store")]:::db
-    end
-
-    LLM["Google Gemini API"]:::ext
-    Embedder["Embedding API"]:::ext
-
-    UI -- "REST / SSE" --> Router
-    Router -- "Validates User" --> Auth
-    Auth -- "Reads/Writes" --> SQLite
+    User["👤 User (Browser)"]:::frontend -- "1. Types Query / Uploads PDF" --> UI["🖥️ Next.js Frontend"]:::frontend
+    UI -- "2. REST API / SSE Stream" --> API["⚙️ FastAPI Backend (/chat)"]:::backend
     
-    Router -- "Routes Requests" --> AgentService
-    AgentService -- "Text Query" --> LLM
-    AgentService -- "Builds/Queries" --> FAISS
-    FAISS -- "Generates Vectors" --> Embedder
+    subgraph AgentCore ["🧠 LangChain Agent Core"]
+        direction TB
+        Agent["LangChain AgentExecutor<br/>(Powered by Gemini LLM)"]:::agent
+        
+        Router{"3. Intent Routing<br/>(What does the user want?)"}:::agent
+        Agent --> Router
+        
+        %% RAG Path
+        Router -- "Information/Policy Search" --> RAG["📖 RAG Engine<br/>(FAISS Vector Store)"]:::tool
+        RAG -- "Retrieves Context" --> Agent
+        
+        %% ML Path
+        Router -- "Loan Prediction Request" --> Extractor["📊 Structured Extractor<br/>(Pydantic)"]:::tool
+        Extractor --> MLTool["🤖 ML Prediction Tool<br/>(loan_tool.py)"]:::tool
+        MLTool -- "Approval % & Feedback" --> Agent
+    end
     
-    AgentService -- "Classifies Type" --> Classifier
-    AgentService -- "Extracts Data" --> StructuredExtractor
-    AgentService -- "Retrieves Context" --> RAG
+    API -- "Passes Query" --> Agent
+    Agent -- "4. Streams Final Answer" --> API
+    API -- "5. Displays Answer" --> UI
 ```
+
+### How an End-to-End Query Works:
+1. **User Request:** The user types a message in the Next.js chat interface (e.g., *"Based on my uploaded documents, will my loan be approved?"*).
+2. **Backend Routing:** The request hits the FastAPI `/chat` endpoint, which authenticates the user via JWT and forwards the query to the LangChain Agent.
+3. **Agent Decision (The "Brain"):** The LangChain Agent uses the LLM (Google Gemini) to understand the user's intent.
+   - **If the user asks a policy question:** The agent uses the **RAG Engine** to search the FAISS vector database for relevant paragraphs in uploaded bank policies and returns a contextual answer.
+   - **If the user asks for a loan prediction:** The agent uses the **Structured Extractor** to pull numbers (income, age, loan amount) from the chat or uploaded PDFs. It then calls the **ML Prediction Tool**.
+4. **ML Processing:** The ML tool validates the extracted data, applies encoding/scaling, and uses a pre-trained `sklearn` model to predict approval chances and generate actionable feedback.
+5. **Streaming Response:** The LangChain Agent combines the RAG context or ML feedback into a natural, human-readable response and streams it back (word-by-word) to the Frontend via Server-Sent Events (SSE).
 
 ---
 
